@@ -26,6 +26,30 @@ class SelectionView: NSView {
         }
     }
 
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+
+        for area in trackingAreas {
+            removeTrackingArea(area)
+        }
+
+        let tracking = NSTrackingArea(
+            rect: bounds,
+            options: [.activeAlways, .mouseMoved, .cursorUpdate, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        addTrackingArea(tracking)
+    }
+
+    override func cursorUpdate(with event: NSEvent) {
+        NSCursor.crosshair.set()
+    }
+
+    override func mouseMoved(with event: NSEvent) {
+        NSCursor.crosshair.set()
+    }
+
     override func mouseDown(with event: NSEvent) {
         startPoint = convert(event.locationInWindow, from: nil)
         currentPoint = startPoint
@@ -38,14 +62,31 @@ class SelectionView: NSView {
 
     override func mouseUp(with event: NSEvent) {
         guard let start = startPoint,
-              let end = currentPoint else { return }
+              let end = currentPoint,
+              let window = self.window,
+              let screen = window.screen else { return }
 
-        let x = Int(min(start.x, end.x))
-        let y = Int(min(start.y, end.y))
-        let w = Int(abs(start.x - end.x))
-        let h = Int(abs(start.y - end.y))
+        let scale = screen.backingScaleFactor
+        let screenFrame = screen.frame  // in points
 
-        print("\(x) \(y) \(w) \(h)")
+
+// print("scale:", scale)
+// print("frame:", screenFrame)
+
+        let x_pt = min(start.x, end.x)
+        let y_pt = min(start.y, end.y)
+        let w_pt = abs(start.x - end.x)
+        let h_pt = abs(start.y - end.y)
+
+        // Convert to pixels
+        let x_px = Int(x_pt * scale)
+        let w_px = Int(w_pt * scale)
+        let h_px = Int(h_pt * scale)
+
+        // Flip Y (IMPORTANT: relative to this screen)
+        let y_px = Int((screenFrame.height - y_pt - h_pt) * scale)
+
+        print("\(x_px) \(y_px) \(w_px) \(h_px)")
         fflush(stdout)
         NSApp.terminate(nil)
     }

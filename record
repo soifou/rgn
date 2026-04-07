@@ -8,19 +8,6 @@ Y=$2
 W=$3
 H=$4
 
-# retina scaling
-SCALE=2
-X=$((X * SCALE))
-Y=$((Y * SCALE))
-W=$((W * SCALE))
-H=$((H * SCALE))
-
-
-# read -r X Y W H < <(./region)
-
-SCREEN_H=1800 # adjust or detect dynamically
-Y=$((SCREEN_H - Y - H))
-
 ffmpeg \
     -f avfoundation \
     -framerate 30 \
