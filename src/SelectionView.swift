@@ -6,6 +6,8 @@ class SelectionView: NSView {
     var currentPoint: NSPoint?
     var isDraggingSelection = false
     var dragOffset: NSPoint = .zero
+    var activeHandle: ResizeHandle = .none
+    let handleSize: CGFloat = 8.0
 
     func currentRect() -> NSRect? {
         guard let start = startPoint,
@@ -63,6 +65,24 @@ class SelectionView: NSView {
             height: abs(start.y - current.y)
         )
 
+        let handleRectSize: CGFloat = 6
+        for corner in [
+            NSPoint(x: rect.minX, y: rect.minY),
+            NSPoint(x: rect.minX, y: rect.maxY),
+            NSPoint(x: rect.maxX, y: rect.minY),
+            NSPoint(x: rect.maxX, y: rect.maxY)
+        ] {
+            let handleRect = NSRect(
+                x: corner.x - handleRectSize/2,
+                y: corner.y - handleRectSize/2,
+                width: handleRectSize,
+                height: handleRectSize
+            )
+
+            NSColor.white.setFill()
+            NSBezierPath(rect: handleRect).fill()
+        }
+
         if config.fillEnabled {
             config.borderColor
                 .withAlphaComponent(config.fillAlpha)
@@ -89,21 +109,31 @@ class SelectionView: NSView {
             if let start = startPoint,
                let end = currentPoint {
                    emitResult(start: start, end: end)
-               }
+            }
             return
         }
 
         // check if inside existing rect
-        if let rect = currentRect(), rect.contains(point) {
-            isDraggingSelection = true
-            dragOffset = NSPoint(
-                x: point.x - rect.origin.x,
-                y: point.y - rect.origin.y
-            )
-            return
-        }
+        if let rect = currentRect() {
+            // resize
+            let handle = detectHandle(at: point, in: rect, handleSize: handleSize)
+            if handle != .none {
+                activeHandle = handle
+                return
+            }
 
+            // move
+            if rect.contains(point) {
+                isDraggingSelection = true
+                dragOffset = NSPoint(
+                    x: point.x - rect.origin.x,
+                    y: point.y - rect.origin.y
+                )
+                return
+            }
+        }
         // otherwise start new selection
+        activeHandle = .none
         isDraggingSelection = false
         startPoint = point
         currentPoint = point
@@ -112,7 +142,40 @@ class SelectionView: NSView {
     override func mouseDragged(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
 
-        if isDraggingSelection, let rect = currentRect() {
+        if activeHandle != .none, let rect = currentRect() {
+            var newRect = rect
+
+            switch activeHandle {
+            case .topLeft:
+                newRect.origin.x = point.x
+                newRect.size.width = rect.maxX - point.x
+                newRect.size.height = point.y - rect.minY
+
+            case .topRight:
+                newRect.size.width = point.x - rect.minX
+                newRect.size.height = point.y - rect.minY
+
+            case .bottomLeft:
+                newRect.origin.x = point.x
+                newRect.origin.y = point.y
+                newRect.size.width = rect.maxX - point.x
+                newRect.size.height = rect.maxY - point.y
+
+            case .bottomRight:
+                newRect.origin.y = point.y
+                newRect.size.width = point.x - rect.minX
+                newRect.size.height = rect.maxY - point.y
+
+            case .none:
+                break
+            }
+
+            startPoint = newRect.origin
+            currentPoint = NSPoint(
+                x: newRect.maxX,
+                y: newRect.maxY
+            )
+        } else if isDraggingSelection, let rect = currentRect() {
 
             let newOrigin = NSPoint(
                 x: point.x - dragOffset.x,
@@ -133,6 +196,9 @@ class SelectionView: NSView {
     }
 
     override func mouseUp(with event: NSEvent) {
+        activeHandle = .none
+        isDraggingSelection = false
+
         guard let start = startPoint,
               let end = currentPoint else { return }
 
@@ -165,8 +231,20 @@ class SelectionView: NSView {
     }
 
     override func mouseMoved(with event: NSEvent) {
-        if config.showCrosshair {
+        guard let rect = currentRect() else { return }
+
+        let point = convert(event.locationInWindow, from: nil)
+        let handle = detectHandle(at: point, in: rect, handleSize: handleSize)
+
+        switch handle {
+        case .topLeft, .bottomRight:
+            NSCursor.crosshair.set() // or diagonal resize
+        case .topRight, .bottomLeft:
             NSCursor.crosshair.set()
+        case .none:
+            if config.showCrosshair {
+                NSCursor.crosshair.set()
+            }
         }
     }
 }

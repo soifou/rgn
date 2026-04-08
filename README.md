@@ -6,8 +6,9 @@ directly usable in tools like ffmpeg.
 
 ## Motivation
 
-On Linux, tools like `slop` or `hacksaw` provide simple ways to select a screen
-region and pipe coordinates into scripts.
+On Linux, tools like [slop](https://github.com/naelstrof/slop) or
+[hacksaw](https://github.com/neXromancers/hacksaw) provide simple ways to select
+a screen region and pipe coordinates into scripts.
 
 On macOS, this workflow seem to be missing:
 
@@ -19,7 +20,7 @@ On macOS, this workflow seem to be missing:
 
 ## Features
 
-- Click-and-drag region selection
+- Click-and-drag region selection (move and resize to adjust)
 - Outputs coordinates in different format: X Y WIDTH HEIGHT
 - Pixel-perfect (Retina-aware)
 - Keyboard to cancel `ESC`, `<C-c>` and `<C-[>`
@@ -41,11 +42,11 @@ swiftc src/*.swift -o rgn
 ## Usage
 
 ```sh
-./rgn
+rgn
 ```
 
 1. Click and drag to select a region
-2. (Optional) Drag inside the region to move
+2. (Optional) Drag inside the region to move, drag the corners to resize
 3. Double click: coordinates are printed to stdout
 
 NOTE: Use `--no-confirm` to prints coordinates on release instead.
@@ -70,7 +71,7 @@ Example: `64 1299 830 174`
 ## Example: screen recording with ffmpeg
 
 ```sh
-coords=$(./rgn)
+coords=$(rgn)
 set -- $coords
 
 X=$1

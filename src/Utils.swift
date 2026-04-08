@@ -48,3 +48,21 @@ func colorFromHex(_ hex: String) -> NSColor {
 
     return NSColor(calibratedRed: r, green: g, blue: b, alpha: 1.0)
 }
+
+func detectHandle(at point: NSPoint, in rect: NSRect, handleSize: CGFloat) -> ResizeHandle {
+    let tl = NSPoint(x: rect.minX, y: rect.maxY)
+    let tr = NSPoint(x: rect.maxX, y: rect.maxY)
+    let bl = NSPoint(x: rect.minX, y: rect.minY)
+    let br = NSPoint(x: rect.maxX, y: rect.minY)
+
+    func near(_ a: NSPoint, _ b: NSPoint) -> Bool {
+        abs(a.x - b.x) < handleSize && abs(a.y - b.y) < handleSize
+    }
+
+    if near(point, tl) { return .topLeft }
+    if near(point, tr) { return .topRight }
+    if near(point, bl) { return .bottomLeft }
+    if near(point, br) { return .bottomRight }
+
+    return .none
+}
