@@ -1,0 +1,33 @@
+---
+name: Build & Release
+on:
+    release:
+        types: [created]
+jobs:
+    build:
+        runs-on: macos-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Set version
+              id: vars
+              run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            - name: Build arm64
+              run: |
+                swiftc -target arm64-apple-macos src/*.swift -o grc-arm64
+            - name: Build x86_64
+              run: |
+                swiftc -target x86_64-apple-macos src/*.swift -o grc-x86_64
+            - name: Create universal binary
+              run: |
+                lipo -create -output grc grc-arm64 grc-x86_64
+            - name: Rename binary
+              run: |
+                mv grc grc-${{ steps.vars.outputs.VERSION }}
+            - name: Zip artifact
+              run: |
+                zip grc-${{ steps.vars.outputs.VERSION }}-macos.zip grc-${{ steps.vars.outputs.VERSION }}
+            - name: Upload release asset
+              uses: softprops/action-gh-release@v2
+              with:
+                files: grc-*-macos.zip
