@@ -20,11 +20,10 @@ rct fills that gap: a small, script-friendly region picker for macOS.
 ## Features
 
 - Click-and-drag region selection
-- Outputs coordinates: X Y WIDTH HEIGHT
+- Outputs coordinates in different format: X Y WIDTH HEIGHT
 - Pixel-perfect (Retina-aware)
-- Crosshair cursor
 - Keyboard to cancel `ESC`, `<C-c>` and `<C-[>`
-- Customizable appearance: `--color`, `--thickness`, `--fill`, `--no-dim`
+- Customizable appearance: `--color`, `--thickness`, `--fill`, `--no-dim`, etc
 - No dependencies beyond macOS AppKit
 
 ## Requirements
@@ -36,7 +35,7 @@ rct fills that gap: a small, script-friendly region picker for macOS.
 ## Build
 
 ```sh
-swiftc rct.swift -o rct
+swiftc src/*.swift -o rct
 ```
 
 ## Usage
@@ -46,7 +45,9 @@ swiftc rct.swift -o rct
 ```
 
 1. Click and drag to select a region
-2. Release mouse: coordinates are printed to stdout
+2. Double click: coordinates are printed to stdout
+
+NOTE: Use `--no-confirm` to prints coordinates on release instead.
 
 Example: `64 1299 830 174`
 
@@ -62,7 +63,7 @@ Example: `64 1299 830 174`
 | `--no-dim`          | Disable dark background overlay                          |
 | `--no-crosshair`    | Hide crosshair cursor                                    |
 | `--no-confirm`      | Print to stdout on mouse release instead of double-click |
-| `--output <format>` | Change stdout to another format (only json supported)    |
+| `--output <format>` | Change stdout to another format (json)                   |
 | `-h`, `--help`      | Show help                                                |
 
 ## Example: screen recording with ffmpeg
