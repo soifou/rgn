@@ -20,7 +20,6 @@ jobs:
             - name: Build x86_64
               run: |
                 swiftc -O -target x86_64-apple-macos11.0 src/*.swift -o rgn-x86_64
-            - run: strip rgn
             - name: Package arm64
               run: |
                 mkdir -p dist/arm64
