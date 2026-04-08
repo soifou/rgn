@@ -1,5 +1,16 @@
 import Cocoa
 
+struct Config {
+    var strokeColor: NSColor = .systemBlue
+    var lineWidth: CGFloat = 2.0
+    var fillEnabled: Bool = false
+    var fillAlpha: CGFloat = 0.2
+    var dimBackground: Bool = true
+    var dashedBorder: Bool = false
+    var showCrosshair: Bool = true
+    var outputJSON: Bool = false
+}
+
 func printHelp() {
     print("""
 rct — Region Capture Tool (macOS)
@@ -76,16 +87,13 @@ class CaptureWindow: NSWindow {
 }
 
 class SelectionView: NSView {
-    var strokeColor: NSColor = .systemBlue
-    var lineWidth: CGFloat = 2.0
-    var fillEnabled: Bool = false
-    var dimBackground: Bool = true
+    var config: Config!
     var startPoint: NSPoint?
     var currentPoint: NSPoint?
 
     override func draw(_ dirtyRect: NSRect) {
 
-        if dimBackground {
+        if config.dimBackground {
             NSColor.black.withAlphaComponent(0.3).setFill()
             dirtyRect.fill()
         }
@@ -100,14 +108,21 @@ class SelectionView: NSView {
             height: abs(start.y - current.y)
         )
 
-        if fillEnabled {
-            strokeColor.withAlphaComponent(0.2).setFill()
+        if config.fillEnabled {
+            config.strokeColor
+                .withAlphaComponent(config.fillAlpha)
+                .setFill()
             NSBezierPath(rect: rect).fill()
         }
 
-        strokeColor.setStroke()
         let path = NSBezierPath(rect: rect)
-        path.lineWidth = lineWidth
+        path.lineWidth = config.lineWidth
+
+        if config.dashedBorder {
+            path.setLineDash([6, 4], count: 2, phase: 0)
+        }
+
+        config.strokeColor.setStroke()
         path.stroke()
     }
 
@@ -140,7 +155,13 @@ class SelectionView: NSView {
         let h_px = Int(h_pt * scale)
         let y_px = Int((screenFrame.height - y_pt - h_pt) * scale)
 
-        print("\(x_px) \(y_px) \(w_px) \(h_px)")
+        if config.outputJSON {
+            print("""
+            {"x":\(x_px),"y":\(y_px),"width":\(w_px),"height":\(h_px)}
+            """)
+        } else {
+            print("\(x_px) \(y_px) \(w_px) \(h_px)")
+        }
         fflush(stdout)
 
         NSApp.terminate(nil)
@@ -164,11 +185,15 @@ class SelectionView: NSView {
     }
 
     override func cursorUpdate(with event: NSEvent) {
-        NSCursor.crosshair.set()
+        if config.showCrosshair {
+            NSCursor.crosshair.set()
+        }
     }
 
     override func mouseMoved(with event: NSEvent) {
-        NSCursor.crosshair.set()
+        if config.showCrosshair {
+            NSCursor.crosshair.set()
+        }
     }
 }
 
@@ -195,10 +220,7 @@ window.collectionBehavior = [
     .fullScreenAuxiliary
 ]
 
-var strokeColor = NSColor.systemBlue
-var thickness: CGFloat = 2.0
-var fillEnabled = false
-var dimBackground = true
+var config = Config()
 
 let args = CommandLine.arguments
 var i = 0
@@ -207,22 +229,41 @@ while i < args.count {
 
     case "--color":
         if i + 1 < args.count {
-            strokeColor = colorFromHex(args[i + 1])
+            config.strokeColor = colorFromHex(args[i + 1])
             i += 1
         }
 
     case "--thickness":
         if i + 1 < args.count,
            let t = Double(args[i + 1]) {
-            thickness = CGFloat(t)
+            config.lineWidth = CGFloat(t)
             i += 1
         }
 
     case "--fill":
-        fillEnabled = true
+        config.fillEnabled = true
+
+    case "--alpha":
+        if i + 1 < args.count,
+           let a = Double(args[i + 1]) {
+            config.fillAlpha = CGFloat(max(0, min(1, a)))
+            i += 1
+        }
 
     case "--no-dim":
-        dimBackground = false
+        config.dimBackground = false
+
+    case "--border-dash":
+        config.dashedBorder = true
+
+    case "--no-crosshair":
+        config.showCrosshair = false
+
+    case "--output":
+        if i + 1 < args.count, args[i + 1] == "json" {
+            config.outputJSON = true
+            i += 1
+        }
 
     case "-h", "--help":
         printHelp()
@@ -235,11 +276,7 @@ while i < args.count {
 }
 
 let view = SelectionView(frame: screenFrame)
-view.strokeColor = strokeColor
-view.lineWidth = thickness
-view.fillEnabled = fillEnabled
-view.dimBackground = dimBackground
-
+view.config = config
 window.contentView = view
 window.makeKeyAndOrderFront(nil)
 
