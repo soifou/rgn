@@ -15,6 +15,7 @@ OPTIONS:
   --alpha <float>       Set transparency level for the overlay
   --no-dim              Disable dark background overlay
   --no-crosshair        Hide crosshair cursor
+  --no-confirm          Print to stdout on mouse release instead of double-click
   --output <format>     Change stdout to another format (only json supported)
 
   -h, --help           Show this help

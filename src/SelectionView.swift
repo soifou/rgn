@@ -5,6 +5,33 @@ class SelectionView: NSView {
     var startPoint: NSPoint?
     var currentPoint: NSPoint?
 
+    func emitResult(start: NSPoint, end: NSPoint) {
+        guard let window = self.window,
+              let screen = window.screen else { return }
+
+        let scale = screen.backingScaleFactor
+        let screenFrame = screen.frame
+
+        let x_pt = min(start.x, end.x)
+        let y_pt = min(start.y, end.y)
+        let w_pt = abs(start.x - end.x)
+        let h_pt = abs(start.y - end.y)
+
+        let x_px = Int(x_pt * scale)
+        let w_px = Int(w_pt * scale)
+        let h_px = Int(h_pt * scale)
+        let y_px = Int((screenFrame.height - y_pt - h_pt) * scale)
+
+        if config.outputJSON {
+            print("{\"x\":\(x_px),\"y\":\(y_px),\"width\":\(w_px),\"height\":\(h_px)}")
+        } else {
+            print("\(x_px) \(y_px) \(w_px) \(h_px)")
+        }
+
+        fflush(stdout)
+        NSApp.terminate(nil)
+    }
+
     override func draw(_ dirtyRect: NSRect) {
 
         if config.dimBackground {
@@ -41,6 +68,14 @@ class SelectionView: NSView {
     }
 
     override func mouseDown(with event: NSEvent) {
+        if event.clickCount == 2 {
+            if let start = startPoint,
+               let end = currentPoint {
+                   emitResult(start: start, end: end)
+            }
+            return
+        }
+
         startPoint = convert(event.locationInWindow, from: nil)
         currentPoint = startPoint
     }
@@ -52,36 +87,14 @@ class SelectionView: NSView {
 
     override func mouseUp(with event: NSEvent) {
         guard let start = startPoint,
-              let end = currentPoint,
-              let window = self.window,
-              let screen = window.screen else { return }
+              let end = currentPoint else { return }
 
-        let scale = screen.backingScaleFactor
-        let screenFrame = screen.frame
-
-        let x_pt = min(start.x, end.x)
-        let y_pt = min(start.y, end.y)
-        let w_pt = abs(start.x - end.x)
-        let h_pt = abs(start.y - end.y)
-
-        let x_px = Int(x_pt * scale)
-        let w_px = Int(w_pt * scale)
-        let h_px = Int(h_pt * scale)
-        let y_px = Int((screenFrame.height - y_pt - h_pt) * scale)
-
-        if config.outputJSON {
-            print("""
-            {"x":\(x_px),"y":\(y_px),"width":\(w_px),"height":\(h_px)}
-            """)
-        } else {
-            print("\(x_px) \(y_px) \(w_px) \(h_px)")
+        if !config.confirm {
+            emitResult(start: start, end: end)
         }
-        fflush(stdout)
-
-        NSApp.terminate(nil)
     }
 
-    // crosshair (stable)
+    // crosshair
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
 

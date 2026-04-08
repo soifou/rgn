@@ -30,6 +30,9 @@ var i = 0
 while i < args.count {
     switch args[i] {
 
+    case "--no-confirm":
+        config.confirm = false
+
     case "--color":
         if i + 1 < args.count {
             config.strokeColor = colorFromHex(args[i + 1])
