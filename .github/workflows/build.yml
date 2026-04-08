@@ -3,6 +3,8 @@ name: Build & Release
 on:
     release:
         types: [created]
+permissions:
+    contents: write
 jobs:
     build:
         runs-on: macos-latest
