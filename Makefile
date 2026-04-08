@@ -1,2 +1,7 @@
+.PHONY: all
 all:
-	swiftc rct.swift -o rct
+	swiftc src/*.swift -o rct
+
+.PHONY: clean
+clean:
+	rm -f rct
