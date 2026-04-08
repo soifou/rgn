@@ -15,7 +15,14 @@ directly usable in tools like ffmpeg.
 
 ## Installation
 
-Download a prebuilt binary from the
+Using [mise](https://mise.jdx.dev/):
+
+```sh
+mise install github:soifou/rgn
+
+```
+
+Or download a prebuilt binary from the
 [Releases](https://github.com/soifou/rgn/releases) page:
 
 ```sh

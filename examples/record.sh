@@ -3,7 +3,7 @@
 VIDEO_PATH=${XDG_VIDEO_DIR:-~/Videos}/record
 file="$VIDEO_PATH/$(date +%F@%T).mp4"
 
-coords=$(./region) || exit 1
+coords=$(./rgn) || exit 1
 [ -z "$coords" ] && exit 1
 set -- $coords
 
