@@ -1,5 +1,30 @@
 import Cocoa
 
+func printHelp() {
+    print("""
+rct — Region Capture Tool (macOS)
+
+USAGE:
+  rct [options]
+
+OPTIONS:
+  --color <hex>        Border color (e.g. "#ffccdd" or ffccdd, default: blue)
+  --thickness <px>     Border thickness (default: 2)
+  --fill               Fill selection with transparent color
+  --no-dim             Disable background dimming
+
+  -h, --help           Show this help
+
+OUTPUT:
+  Prints: X Y WIDTH HEIGHT (in pixels, ffmpeg-ready)
+
+EXAMPLES:
+  rct
+  rct --color "#ff0000" --thickness 4
+  rct --fill --no-dim
+""")
+}
+
 func colorFromHex(_ hex: String) -> NSColor {
     var hex = hex.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -198,6 +223,10 @@ while i < args.count {
 
     case "--no-dim":
         dimBackground = false
+
+    case "-h", "--help":
+        printHelp()
+        exit(0)
 
     default:
         break
