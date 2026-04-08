@@ -1,2 +1,2 @@
 all:
-	swiftc region.swift -o region
+	swiftc rct.swift -o rct
