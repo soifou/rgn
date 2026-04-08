@@ -45,7 +45,8 @@ swiftc src/*.swift -o rct
 ```
 
 1. Click and drag to select a region
-2. Double click: coordinates are printed to stdout
+2. (Optional) Drag inside the region to move
+3. Double click: coordinates are printed to stdout
 
 NOTE: Use `--no-confirm` to prints coordinates on release instead.
 

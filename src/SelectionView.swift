@@ -4,6 +4,20 @@ class SelectionView: NSView {
     var config: Config!
     var startPoint: NSPoint?
     var currentPoint: NSPoint?
+    var isDraggingSelection = false
+    var dragOffset: NSPoint = .zero
+
+    func currentRect() -> NSRect? {
+        guard let start = startPoint,
+              let current = currentPoint else { return nil }
+
+        return NSRect(
+            x: min(start.x, current.x),
+            y: min(start.y, current.y),
+            width: abs(start.x - current.x),
+            height: abs(start.y - current.y)
+        )
+    }
 
     func emitResult(start: NSPoint, end: NSPoint) {
         guard let window = self.window,
@@ -68,20 +82,53 @@ class SelectionView: NSView {
     }
 
     override func mouseDown(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+
+        // double click to confirm
         if event.clickCount == 2 {
             if let start = startPoint,
                let end = currentPoint {
                    emitResult(start: start, end: end)
-            }
+               }
             return
         }
 
-        startPoint = convert(event.locationInWindow, from: nil)
-        currentPoint = startPoint
+        // check if inside existing rect
+        if let rect = currentRect(), rect.contains(point) {
+            isDraggingSelection = true
+            dragOffset = NSPoint(
+                x: point.x - rect.origin.x,
+                y: point.y - rect.origin.y
+            )
+            return
+        }
+
+        // otherwise start new selection
+        isDraggingSelection = false
+        startPoint = point
+        currentPoint = point
     }
 
     override func mouseDragged(with event: NSEvent) {
-        currentPoint = convert(event.locationInWindow, from: nil)
+        let point = convert(event.locationInWindow, from: nil)
+
+        if isDraggingSelection, let rect = currentRect() {
+
+            let newOrigin = NSPoint(
+                x: point.x - dragOffset.x,
+                y: point.y - dragOffset.y
+            )
+
+            startPoint = newOrigin
+            currentPoint = NSPoint(
+                x: newOrigin.x + rect.width,
+                y: newOrigin.y + rect.height
+            )
+
+        } else {
+            currentPoint = point
+        }
+
         needsDisplay = true
     }
 
