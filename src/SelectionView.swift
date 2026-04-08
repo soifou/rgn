@@ -50,7 +50,7 @@ class SelectionView: NSView {
         )
 
         if config.fillEnabled {
-            config.strokeColor
+            config.borderColor
                 .withAlphaComponent(config.fillAlpha)
                 .setFill()
             NSBezierPath(rect: rect).fill()
@@ -63,7 +63,7 @@ class SelectionView: NSView {
             path.setLineDash([6, 4], count: 2, phase: 0)
         }
 
-        config.strokeColor.setStroke()
+        config.borderColor.setStroke()
         path.stroke()
     }
 

@@ -30,12 +30,9 @@ var i = 0
 while i < args.count {
     switch args[i] {
 
-    case "--no-confirm":
-        config.confirm = false
-
     case "--color":
         if i + 1 < args.count {
-            config.strokeColor = colorFromHex(args[i + 1])
+            config.borderColor = colorFromHex(args[i + 1])
             i += 1
         }
 
@@ -64,6 +61,9 @@ while i < args.count {
 
     case "--no-crosshair":
         config.showCrosshair = false
+
+    case "--no-confirm":
+        config.confirm = false
 
     case "--output":
         if i + 1 < args.count, args[i + 1] == "json" {
