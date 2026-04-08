@@ -1,7 +1,7 @@
 .PHONY: all
 all:
-	swiftc src/*.swift -o rct
+	swiftc src/*.swift -o rgn
 
 .PHONY: clean
 clean:
-	rm -f rct
+	rm -f rgn

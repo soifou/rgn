@@ -2,10 +2,10 @@ import Cocoa
 
 func printHelp() {
     print("""
-rct — Region Capture Tool (macOS)
+rgn — ReGioN capture tool for macOS
 
 USAGE:
-  rct [options]
+  rgn [options]
 
 OPTIONS:
   --color <hex>         Set border color in hex format
@@ -24,9 +24,9 @@ OUTPUT:
   Prints: X Y WIDTH HEIGHT (in pixels, ffmpeg-ready)
 
 EXAMPLES:
-  rct
-  rct --color "#ff0000" --thickness 4
-  rct --fill --no-dim
+  rgn
+  rgn --color "#ff0000" --thickness 4
+  rgn --fill --no-dim
 """)
 }
 

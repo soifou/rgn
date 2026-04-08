@@ -1,4 +1,4 @@
-# rct - Region Capture Tool (macOS)
+# rgn - ReGioN capture tool for macOS
 
 Minimal screen region selector for macOS, designed for shell scripting
 workflows. It lets you interactively select a region and outputs coordinates
@@ -15,7 +15,7 @@ On macOS, this workflow seem to be missing:
 - no CLI tool exists to select a region and reuse it for video recording
 - GUI tools don't integrate well with shell pipelines
 
-rct fills that gap: a small, script-friendly region picker for macOS.
+`rgn` fills that gap: a small, script-friendly region picker for macOS.
 
 ## Features
 
@@ -35,13 +35,13 @@ rct fills that gap: a small, script-friendly region picker for macOS.
 ## Build
 
 ```sh
-swiftc src/*.swift -o rct
+swiftc src/*.swift -o rgn
 ```
 
 ## Usage
 
 ```sh
-./rct
+./rgn
 ```
 
 1. Click and drag to select a region
@@ -70,7 +70,7 @@ Example: `64 1299 830 174`
 ## Example: screen recording with ffmpeg
 
 ```sh
-coords=$(./rct)
+coords=$(./rgn)
 set -- $coords
 
 X=$1
