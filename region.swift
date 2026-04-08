@@ -1,5 +1,36 @@
 import Cocoa
 
+class CaptureWindow: NSWindow {
+    var onCancel: (() -> Void)?
+
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+
+    override func keyDown(with event: NSEvent) {
+        let isCtrl = event.modifierFlags.contains(.control)
+
+        if event.keyCode == 53 { // ESC
+            cancel()
+            return
+        }
+
+        if isCtrl, let chars = event.charactersIgnoringModifiers?.lowercased() {
+            if chars == "c" || chars == "[" {
+                cancel()
+                return
+            }
+        }
+
+        super.keyDown(with: event)
+    }
+
+    private func cancel() {
+        NSSound.beep()
+        onCancel?()
+        NSApp.terminate(nil)
+    }
+}
+
 class SelectionView: NSView {
     var startPoint: NSPoint?
     var currentPoint: NSPoint?
@@ -8,46 +39,18 @@ class SelectionView: NSView {
         NSColor.black.withAlphaComponent(0.3).setFill()
         dirtyRect.fill()
 
-        if let start = startPoint, let current = currentPoint {
-            let rect = NSRect(
-                x: min(start.x, current.x),
-                y: min(start.y, current.y),
-                width: abs(start.x - current.x),
-                height: abs(start.y - current.y)
-            )
+        guard let start = startPoint,
+              let current = currentPoint else { return }
 
-            NSColor.clear.setFill()
-            NSBezierPath(rect: rect).fill()
-
-            NSColor.systemBlue.setStroke()
-            let path = NSBezierPath(rect: rect)
-            path.lineWidth = 2
-            path.stroke()
-        }
-    }
-
-    override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-
-        for area in trackingAreas {
-            removeTrackingArea(area)
-        }
-
-        let tracking = NSTrackingArea(
-            rect: bounds,
-            options: [.activeAlways, .mouseMoved, .cursorUpdate, .inVisibleRect],
-            owner: self,
-            userInfo: nil
+        let rect = NSRect(
+            x: min(start.x, current.x),
+            y: min(start.y, current.y),
+            width: abs(start.x - current.x),
+            height: abs(start.y - current.y)
         )
-        addTrackingArea(tracking)
-    }
 
-    override func cursorUpdate(with event: NSEvent) {
-        NSCursor.crosshair.set()
-    }
-
-    override func mouseMoved(with event: NSEvent) {
-        NSCursor.crosshair.set()
+        NSColor.systemBlue.setStroke()
+        NSBezierPath(rect: rect).stroke()
     }
 
     override func mouseDown(with event: NSEvent) {
@@ -67,28 +70,53 @@ class SelectionView: NSView {
               let screen = window.screen else { return }
 
         let scale = screen.backingScaleFactor
-        let screenFrame = screen.frame  // in points
-
-
-// print("scale:", scale)
-// print("frame:", screenFrame)
+        let screenFrame = screen.frame
 
         let x_pt = min(start.x, end.x)
         let y_pt = min(start.y, end.y)
         let w_pt = abs(start.x - end.x)
         let h_pt = abs(start.y - end.y)
 
-        // Convert to pixels
+        // pixel conversion
         let x_px = Int(x_pt * scale)
         let w_px = Int(w_pt * scale)
         let h_px = Int(h_pt * scale)
 
-        // Flip Y (IMPORTANT: relative to this screen)
+        // correct Y flip
         let y_px = Int((screenFrame.height - y_pt - h_pt) * scale)
 
         print("\(x_px) \(y_px) \(w_px) \(h_px)")
         fflush(stdout)
+
         NSApp.terminate(nil)
+    }
+
+    // crosshair stuff
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        NSCursor.crosshair.set()
+    }
+    override func mouseMoved(with event: NSEvent) {
+        NSCursor.crosshair.set()
+    }
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+
+        for area in trackingAreas {
+            removeTrackingArea(area)
+        }
+
+        let tracking = NSTrackingArea(
+            rect: bounds,
+            options: [.activeAlways, .mouseMoved, .cursorUpdate, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+
+        addTrackingArea(tracking)
+    }
+    override func cursorUpdate(with event: NSEvent) {
+        NSCursor.crosshair.set()
     }
 }
 
@@ -96,27 +124,33 @@ class SelectionView: NSView {
 let app = NSApplication.shared
 app.setActivationPolicy(.accessory)
 
-let screen = NSScreen.main!.frame
+let screenFrame = NSScreen.main!.frame
 
-let window = NSWindow(
-    contentRect: screen,
+let window = CaptureWindow(
+    contentRect: screenFrame,
     styleMask: .borderless,
     backing: .buffered,
     defer: false
 )
 
-window.level = .screenSaver
+window.level = .floating
 window.isOpaque = false
 window.backgroundColor = .clear
 window.ignoresMouseEvents = false
-window.makeKeyAndOrderFront(nil)
-window.makeFirstResponder(nil)
 
-// Crosshair cursor
-NSCursor.crosshair.set()
+window.collectionBehavior = [
+    .canJoinAllSpaces,
+    .fullScreenAuxiliary
+]
 
-let view = SelectionView(frame: screen)
+let view = SelectionView(frame: screenFrame)
 window.contentView = view
 
+window.makeKeyAndOrderFront(nil)
+
 app.activate(ignoringOtherApps: true)
+window.makeKey()
+window.makeMain()
+window.makeFirstResponder(view)
+
 app.run()
