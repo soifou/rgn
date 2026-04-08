@@ -26,8 +26,8 @@ On macOS, similar functionality is fragmented:
 - screen recording tools do not expose a CLI-friendly region picker
 - no simple equivalent exists for piping interactive region selection into shell scripts
 
-This project was created to fill that gap: a minimal, script-friendly region
-selector for macOS that  integrates cleanly with tools such as `ffmpeg` for screen
+This project try to fill that gap: a minimal, script-friendly region selector
+for macOS that integrates cleanly with tools such as `ffmpeg` for screen
 recording automation.
 
 ## Use case
@@ -43,6 +43,7 @@ Compile using Swift:
 
 ```sh
 swiftc rct.swift -o rct
+# or make
 ```
 
 ## Usage
@@ -59,6 +60,14 @@ Then:
 - Release mouse: coordinates are printed to stdout
 
 Example output: `64 1299 830 174`
+
+For ricers among us, few arguments allows you to tweak the appearance of the grab:
+
+- Custom color: `./rct --color "#ffccdd"`
+- Thick red border: `./rct --color ff0000 --thickness 4`
+- With fill: `./rct --fill`
+- No dark overlay: `./rct --no-dim`
+- Combined: `./rct --color "#00ffcc" --thickness 3 --fill --no-dim`
 
 ## Example: screen recording with ffmpeg
 

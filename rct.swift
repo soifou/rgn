@@ -1,5 +1,24 @@
 import Cocoa
 
+func colorFromHex(_ hex: String) -> NSColor {
+    var hex = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+
+    if hex.hasPrefix("#") {
+        hex.removeFirst()
+    }
+
+    guard hex.count == 6,
+          let value = Int(hex, radix: 16) else {
+        return NSColor.systemBlue // fallback
+    }
+
+    let r = CGFloat((value >> 16) & 0xFF) / 255.0
+    let g = CGFloat((value >> 8) & 0xFF) / 255.0
+    let b = CGFloat(value & 0xFF) / 255.0
+
+    return NSColor(calibratedRed: r, green: g, blue: b, alpha: 1.0)
+}
+
 class CaptureWindow: NSWindow {
     var onCancel: (() -> Void)?
 
@@ -32,12 +51,19 @@ class CaptureWindow: NSWindow {
 }
 
 class SelectionView: NSView {
+    var strokeColor: NSColor = .systemBlue
+    var lineWidth: CGFloat = 2.0
+    var fillEnabled: Bool = false
+    var dimBackground: Bool = true
     var startPoint: NSPoint?
     var currentPoint: NSPoint?
 
     override func draw(_ dirtyRect: NSRect) {
-        NSColor.black.withAlphaComponent(0.3).setFill()
-        dirtyRect.fill()
+
+        if dimBackground {
+            NSColor.black.withAlphaComponent(0.3).setFill()
+            dirtyRect.fill()
+        }
 
         guard let start = startPoint,
               let current = currentPoint else { return }
@@ -49,8 +75,15 @@ class SelectionView: NSView {
             height: abs(start.y - current.y)
         )
 
-        NSColor.systemBlue.setStroke()
-        NSBezierPath(rect: rect).stroke()
+        if fillEnabled {
+            strokeColor.withAlphaComponent(0.2).setFill()
+            NSBezierPath(rect: rect).fill()
+        }
+
+        strokeColor.setStroke()
+        let path = NSBezierPath(rect: rect)
+        path.lineWidth = lineWidth
+        path.stroke()
     }
 
     override func mouseDown(with event: NSEvent) {
@@ -77,12 +110,9 @@ class SelectionView: NSView {
         let w_pt = abs(start.x - end.x)
         let h_pt = abs(start.y - end.y)
 
-        // pixel conversion
         let x_px = Int(x_pt * scale)
         let w_px = Int(w_pt * scale)
         let h_px = Int(h_pt * scale)
-
-        // correct Y flip
         let y_px = Int((screenFrame.height - y_pt - h_pt) * scale)
 
         print("\(x_px) \(y_px) \(w_px) \(h_px)")
@@ -91,14 +121,7 @@ class SelectionView: NSView {
         NSApp.terminate(nil)
     }
 
-    // crosshair stuff
-    override func viewDidMoveToWindow() {
-        super.viewDidMoveToWindow()
-        NSCursor.crosshair.set()
-    }
-    override func mouseMoved(with event: NSEvent) {
-        NSCursor.crosshair.set()
-    }
+    // crosshair (stable)
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
 
@@ -112,10 +135,14 @@ class SelectionView: NSView {
             owner: self,
             userInfo: nil
         )
-
         addTrackingArea(tracking)
     }
+
     override func cursorUpdate(with event: NSEvent) {
+        NSCursor.crosshair.set()
+    }
+
+    override func mouseMoved(with event: NSEvent) {
         NSCursor.crosshair.set()
     }
 }
@@ -143,9 +170,48 @@ window.collectionBehavior = [
     .fullScreenAuxiliary
 ]
 
-let view = SelectionView(frame: screenFrame)
-window.contentView = view
+var strokeColor = NSColor.systemBlue
+var thickness: CGFloat = 2.0
+var fillEnabled = false
+var dimBackground = true
 
+let args = CommandLine.arguments
+var i = 0
+while i < args.count {
+    switch args[i] {
+
+    case "--color":
+        if i + 1 < args.count {
+            strokeColor = colorFromHex(args[i + 1])
+            i += 1
+        }
+
+    case "--thickness":
+        if i + 1 < args.count,
+           let t = Double(args[i + 1]) {
+            thickness = CGFloat(t)
+            i += 1
+        }
+
+    case "--fill":
+        fillEnabled = true
+
+    case "--no-dim":
+        dimBackground = false
+
+    default:
+        break
+    }
+    i += 1
+}
+
+let view = SelectionView(frame: screenFrame)
+view.strokeColor = strokeColor
+view.lineWidth = thickness
+view.fillEnabled = fillEnabled
+view.dimBackground = dimBackground
+
+window.contentView = view
 window.makeKeyAndOrderFront(nil)
 
 app.activate(ignoringOtherApps: true)
