@@ -20,16 +20,19 @@ jobs:
             - name: Build x86_64
               run: |
                 swiftc -O -target x86_64-apple-macos11.0 src/*.swift -o rgn-x86_64
-            - name: Create universal binary
+            - run: strip rgn
+            - name: Package arm64
               run: |
-                lipo -create -output rgn rgn-arm64 rgn-x86_64
-            - name: Rename binary
+                mkdir -p dist/arm64
+                mv rgn dist/arm64/
+                tar -czf rgn-${{ steps.vars.outputs.VERSION }}-darwin_arm64.tar.gz -C dist/arm64 rgn
+            - name: Package x86_64
               run: |
-                mv rgn rgn-${{ steps.vars.outputs.VERSION }}
-            - name: Zip artifact
-              run: |
-                zip rgn-${{ steps.vars.outputs.VERSION }}-macos.zip rgn-${{ steps.vars.outputs.VERSION }}
-            - name: Upload release asset
+                mkdir -p dist/amd64
+                mv rgn dist/amd64/
+                tar -czf rgn-${{ steps.vars.outputs.VERSION }}-darwin_amd64.tar.gz -C dist/amd64 rgn
+            - name: Upload release assets
               uses: softprops/action-gh-release@v2
               with:
-                files: rgn-*-macos.zip
+                files: |
+                    rgn-*-darwin_*.tar.gz
