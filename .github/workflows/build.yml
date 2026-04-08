@@ -16,15 +16,15 @@ jobs:
               run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
             - name: Build arm64
               run: |
-                swiftc -O -target arm64-apple-macos11.0 src/*.swift -o rgn-arm64
-            - name: Build x86_64
-              run: |
-                swiftc -O -target x86_64-apple-macos11.0 src/*.swift -o rgn-x86_64
+                swiftc -O -target arm64-apple-macos11.0 src/*.swift -o rgn
             - name: Package arm64
               run: |
                 mkdir -p dist/arm64
                 mv rgn dist/arm64/
                 tar -czf rgn-${{ steps.vars.outputs.VERSION }}-darwin_arm64.tar.gz -C dist/arm64 rgn
+            - name: Build x86_64
+              run: |
+                swiftc -O -target x86_64-apple-macos11.0 src/*.swift -o rgn
             - name: Package x86_64
               run: |
                 mkdir -p dist/amd64
