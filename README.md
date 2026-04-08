@@ -4,20 +4,6 @@ Minimal screen region selector for macOS, designed for shell scripting
 workflows. It lets you interactively select a region and outputs coordinates
 directly usable in tools like ffmpeg.
 
-## Motivation
-
-On Linux, tools like [slop](https://github.com/naelstrof/slop) or
-[hacksaw](https://github.com/neXromancers/hacksaw) provide simple ways to select
-a screen region and pipe coordinates into scripts.
-
-On macOS, this workflow seem to be missing:
-
-- `screencapture` supports region selection, but only for screenshots
-- no CLI tool exists to select a region and reuse it for video recording
-- GUI tools don't integrate well with shell pipelines
-
-`rgn` fills that gap: a small, script-friendly region picker for macOS.
-
 ## Features
 
 - Click-and-drag region selection (move and resize to adjust)
@@ -27,16 +13,17 @@ On macOS, this workflow seem to be missing:
 - Customizable appearance: `--color`, `--thickness`, `--fill`, `--no-dim`, etc
 - No dependencies beyond macOS AppKit
 
-## Requirements
+## Installation
 
-- macOS (tested on modern versions, i.e. Tahoe)
-- Swift toolchain (swiftc)
-- AppKit framework (included with macOS)
-
-## Build
+Download a prebuilt binary from the
+[Releases](https://github.com/soifou/rgn/releases) page:
 
 ```sh
-swiftc src/*.swift -o rgn
+rgn-<version>-darwin_arm64.tar.gz (Apple Silicon)
+rgn-<version>-darwin_amd64.tar.gz (Intel)
+tar -xzf rgn-*.tar.gz
+chmod +x rgn
+./rgn
 ```
 
 ## Usage
@@ -68,7 +55,9 @@ Example: `64 1299 830 174`
 | `--output <format>` | Change stdout to another format (json)                   |
 | `-h`, `--help`      | Show help                                                |
 
-## Example: screen recording with ffmpeg
+## Examples
+
+### Screen recording with ffmpeg
 
 ```sh
 coords=$(rgn)
@@ -87,3 +76,38 @@ ffmpeg \
     -pix_fmt yuv420p \
     out.mp4
 ```
+
+## Motivation
+
+On Linux, tools like [slop](https://github.com/naelstrof/slop) or
+[hacksaw](https://github.com/neXromancers/hacksaw) provide simple ways to select
+a screen region and pipe coordinates into scripts.
+
+On macOS, this workflow seem to be missing:
+
+- `screencapture` supports region selection, but only for screenshots
+- no CLI tool exists to select a region and reuse it for video recording
+- GUI tools don't integrate well with shell pipelines
+
+`rgn` fills that gap: a small, script-friendly region picker for macOS.
+
+## Build
+
+Requirements:
+
+- macOS (tested on modern versions, i.e. Tahoe)
+- Swift toolchain (swiftc)
+- AppKit framework (included with macOS)
+
+```sh
+swiftc src/*.swift -o rgn
+```
+
+## Contributing
+
+Issues and ideas are welcome.
+
+Feel free to open a PR or discussion if you have improvements or feature
+requests.
+
+## License (MIT)
