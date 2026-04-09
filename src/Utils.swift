@@ -16,10 +16,10 @@ OPTIONS:
   --no-dim              Disable dark background overlay
   --no-crosshair        Hide crosshair cursor
   --no-confirm          Print to stdout on mouse release instead of double-click
-  --output <format>     Change stdout to another format (only json supported)
+  --output <format>     Change stdout to another format
 
   -V, --version         Display version information and exit
-  -h, --help           Show this help
+  -h, --help            Show this help
 
 OUTPUT:
   Prints: X Y WIDTH HEIGHT (in pixels, ffmpeg-ready)

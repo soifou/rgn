@@ -19,7 +19,6 @@ Using [mise](https://mise.jdx.dev/):
 
 ```sh
 mise install github:soifou/rgn
-
 ```
 
 Or download a prebuilt binary from the
@@ -41,11 +40,10 @@ rgn
 
 1. Click and drag to select a region
 2. (Optional) Drag inside the region to move, drag the corners to resize
-3. Double click: coordinates are printed to stdout
+3. Double click: coordinates are printed to stdout: e.g. `64 1299 830 174`
 
-NOTE: Use `--no-confirm` to prints coordinates on release instead.
-
-Example: `64 1299 830 174`
+> [!NOTE]
+> Use `--no-confirm` to prints coordinates on release instead.
 
 ## CLI arguments
 
@@ -71,10 +69,7 @@ Example: `64 1299 830 174`
 coords=$(rgn)
 set -- $coords
 
-X=$1
-Y=$2
-W=$3
-H=$4
+X=$1 Y=$2 W=$3 H=$4
 
 ffmpeg \
     -f avfoundation \
@@ -118,4 +113,6 @@ Issues and ideas are welcome.
 Feel free to open a PR or discussion if you have improvements or feature
 requests.
 
-## License (MIT)
+## License
+
+MIT
