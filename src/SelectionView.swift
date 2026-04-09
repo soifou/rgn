@@ -79,7 +79,7 @@ class SelectionView: NSView {
                 height: handleRectSize
             )
 
-            NSColor.white.setFill()
+            config.borderColor.setFill()
             NSBezierPath(rect: handleRect).fill()
         }
 
