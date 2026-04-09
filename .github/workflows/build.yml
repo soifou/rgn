@@ -11,12 +11,17 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
             - name: Set version
               id: vars
-              run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+              run: echo "VERSION=$(git describe --tags --always)" >> $GITHUB_OUTPUT
+            - name: Generate version file
+              run: |
+                echo "let appVersion = \"${{ steps.vars.outputs.VERSION }}\"" > build.swift
             - name: Build arm64
               run: |
-                swiftc -O -target arm64-apple-macos11.0 src/*.swift -o rgn
+                swiftc -O -target arm64-apple-macos11.0 src/*.swift build.swift -o rgn
             - name: Package arm64
               run: |
                 mkdir -p dist/arm64
@@ -24,7 +29,7 @@ jobs:
                 tar -czf rgn-${{ steps.vars.outputs.VERSION }}-darwin_arm64.tar.gz -C dist/arm64 rgn
             - name: Build x86_64
               run: |
-                swiftc -O -target x86_64-apple-macos11.0 src/*.swift -o rgn
+                swiftc -O -target x86_64-apple-macos11.0 src/*.swift build.swift -o rgn
             - name: Package x86_64
               run: |
                 mkdir -p dist/amd64

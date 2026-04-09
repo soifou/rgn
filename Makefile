@@ -1,6 +1,11 @@
+.SILENT:
+
+VERSION = $(shell git describe --tags --always)
+
 .PHONY: all
 all:
-	swiftc src/*.swift -o rgn
+	echo 'let appVersion = "$(VERSION)"' > build.swift
+	swiftc src/*.swift build.swift -o rgn
 
 .PHONY: clean
 clean:

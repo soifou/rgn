@@ -60,6 +60,7 @@ Example: `64 1299 830 174`
 | `--no-crosshair`    | Hide crosshair cursor                                    |
 | `--no-confirm`      | Print to stdout on mouse release instead of double-click |
 | `--output <format>` | Change stdout to another format (json)                   |
+| `-V`, `--version`   | Display version information and exit                     |
 | `-h`, `--help`      | Show help                                                |
 
 ## Examples
@@ -107,7 +108,7 @@ Requirements:
 - AppKit framework (included with macOS)
 
 ```sh
-swiftc src/*.swift -o rgn
+make
 ```
 
 ## Contributing

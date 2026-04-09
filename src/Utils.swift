@@ -18,6 +18,7 @@ OPTIONS:
   --no-confirm          Print to stdout on mouse release instead of double-click
   --output <format>     Change stdout to another format (only json supported)
 
+  -V, --version         Display version information and exit
   -h, --help           Show this help
 
 OUTPUT:

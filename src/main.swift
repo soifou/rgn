@@ -1,6 +1,6 @@
 import Cocoa
 
-// Setup app
+let appName = "rgn"
 let app = NSApplication.shared
 app.setActivationPolicy(.accessory)
 
@@ -70,6 +70,10 @@ while i < args.count {
             config.outputJSON = true
             i += 1
         }
+
+    case "-V", "--version":
+        print("\(appName) \(appVersion)")
+        exit(0)
 
     case "-h", "--help":
         printHelp()
