@@ -16,8 +16,8 @@ OPTIONS:
   --no-dim              Disable dark background overlay
   --no-crosshair        Hide crosshair cursor
   --no-confirm          Print to stdout on mouse release instead of double-click
-  --output <format>     Change stdout to another format
-  --mode <name>         Output mode: pixel (default), point
+  --format <format>     Output format: text (default), json
+  --mode <name>         Coordinate mode: pixel (default), point
 
   -V, --version         Display version information and exit
   -h, --help            Show this help
@@ -69,15 +69,16 @@ func detectHandle(at point: NSPoint, in rect: NSRect, handleSize: CGFloat) -> Re
     return .none
 }
 
-func rectToString(_ rect: Rect, json: Bool = false) -> String {
+func rectToString(_ rect: Rect, format: OutputFormat) -> String {
     let x = Int(rect.x.rounded())
     let y = Int(rect.y.rounded())
     let w = Int(rect.w.rounded())
     let h = Int(rect.h.rounded())
 
-    if json {
+    switch format {
+    case .json:
         return "{\"x\":\(x),\"y\":\(y),\"width\":\(w),\"height\":\(h)}"
-    } else {
+    case .text:
         return "\(x) \(y) \(w) \(h)"
     }
 }

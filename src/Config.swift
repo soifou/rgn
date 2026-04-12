@@ -5,6 +5,12 @@ enum OutputMode {
     case point
 }
 
+enum OutputFormat {
+    case text
+    case json
+}
+
+
 struct Config {
     var confirm: Bool = true
     var borderColor: NSColor = .systemBlue
@@ -14,6 +20,6 @@ struct Config {
     var dimBackground: Bool = true
     var dashedBorder: Bool = false
     var showCrosshair: Bool = true
-    var outputJSON: Bool = false
+    var format: OutputFormat = .text
     var mode: OutputMode = .pixel
 }

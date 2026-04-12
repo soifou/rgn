@@ -50,7 +50,7 @@ class SelectionView: NSView {
             let h_sc = h_pt
 
             let rect = Rect(x: x_sc, y: y_sc, w: w_sc, h: h_sc)
-            print(rectToString(rect, json: config.outputJSON))
+            print(rectToString(rect, format: config.format))
         case .pixel:
             let x_pt = rectInView.origin.x
             let y_pt = rectInView.origin.y
@@ -63,7 +63,7 @@ class SelectionView: NSView {
             let y_px = (screenFrame.height - y_pt - h_pt) * scale
 
             let rect = Rect(x: x_px, y: y_px, w: w_px, h: h_px)
-            print(rectToString(rect, json: config.outputJSON))
+            print(rectToString(rect, format: config.format))
         }
 
         fflush(stdout)

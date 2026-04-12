@@ -65,9 +65,15 @@ while i < args.count {
     case "--no-confirm":
         config.confirm = false
 
-    case "--output":
-        if i + 1 < args.count, args[i + 1] == "json" {
-            config.outputJSON = true
+    case "--format":
+        if i + 1 < args.count {
+            let value = args[i + 1]
+            switch value {
+            case "json":
+                config.format = .json
+            default:
+                config.format = .text
+            }
             i += 1
         }
 

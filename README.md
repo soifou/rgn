@@ -1,4 +1,4 @@
-# rgn - ReGioN capture tool for macOS
+# rgn
 
 Minimal screen region selector for macOS, designed for shell scripting
 workflows. It lets you interactively select a region and outputs coordinates
@@ -7,7 +7,7 @@ directly usable in tools like ffmpeg.
 ## Features
 
 - Click-and-drag region selection (move and resize to adjust)
-- Outputs coordinates in different format: X Y WIDTH HEIGHT
+- Outputs region coordinates in different format: X Y WIDTH HEIGHT
 - Pixel-perfect (Retina-aware)
 - Keyboard to cancel `ESC`, `<C-c>` and `<C-[>`
 - Customizable appearance: `--color`, `--thickness`, `--fill`, `--no-dim`, etc
@@ -65,8 +65,8 @@ coordinates as pixels or points, controlled by `--mode`:
 | `--no-dim`          | Disable dark background overlay                          |
 | `--no-crosshair`    | Hide crosshair cursor                                    |
 | `--no-confirm`      | Print to stdout on mouse release instead of double-click |
-| `--output <format>` | Change stdout to another format (json)                   |
-| `--mode <format>`   | Output mode: pixel (default), point                      |
+| `--format <format>` | Output format: text (default), json                      |
+| `--mode <mode>`     | Coordinate mode: pixel (default), point                  |
 | `-V`, `--version`   | Display version information and exit                     |
 | `-h`, `--help`      | Show help                                                |
 
