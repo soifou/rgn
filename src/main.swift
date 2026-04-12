@@ -71,6 +71,22 @@ while i < args.count {
             i += 1
         }
 
+    case "--mode":
+        if i + 1 < args.count {
+            let value = args[i + 1]
+            switch value {
+            case "pixel":
+                config.mode = .pixel
+            case "point":
+                config.mode = .point
+            default:
+                fputs("Unknown mode: \(value)\n", stderr)
+                fputs("Supported modes: pixel, point\n", stderr)
+                exit(1)
+            }
+            i += 1
+        }
+
     case "-V", "--version":
         print("\(appName) \(appVersion)")
         exit(0)

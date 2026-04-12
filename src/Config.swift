@@ -1,5 +1,10 @@
 import Cocoa
 
+enum OutputMode {
+    case pixel
+    case point
+}
+
 struct Config {
     var confirm: Bool = true
     var borderColor: NSColor = .systemBlue
@@ -10,4 +15,5 @@ struct Config {
     var dashedBorder: Bool = false
     var showCrosshair: Bool = true
     var outputJSON: Bool = false
+    var mode: OutputMode = .pixel
 }

@@ -25,23 +25,45 @@ class SelectionView: NSView {
         guard let window = self.window,
               let screen = window.screen else { return }
 
+        let rectInView = NSRect(
+            x: min(start.x, end.x),
+            y: min(start.y, end.y),
+            width: abs(start.x - end.x),
+            height: abs(start.y - end.y)
+        )
+
         let scale = screen.backingScaleFactor
+        let rectInWindow = self.convert(rectInView, to: nil)
+        let rectInScreenPoints = window.convertToScreen(rectInWindow)
         let screenFrame = screen.frame
 
-        let x_pt = min(start.x, end.x)
-        let y_pt = min(start.y, end.y)
-        let w_pt = abs(start.x - end.x)
-        let h_pt = abs(start.y - end.y)
+        switch config.mode {
+        case .point:
+            let x_pt = rectInScreenPoints.origin.x
+            let y_pt = rectInScreenPoints.origin.y
+            let w_pt = rectInScreenPoints.size.width
+            let h_pt = rectInScreenPoints.size.height
 
-        let x_px = Int(x_pt * scale)
-        let w_px = Int(w_pt * scale)
-        let h_px = Int(h_pt * scale)
-        let y_px = Int((screenFrame.height - y_pt - h_pt) * scale)
+            let x_sc = x_pt
+            let y_sc = screenFrame.height - y_pt - h_pt
+            let w_sc = w_pt
+            let h_sc = h_pt
 
-        if config.outputJSON {
-            print("{\"x\":\(x_px),\"y\":\(y_px),\"width\":\(w_px),\"height\":\(h_px)}")
-        } else {
-            print("\(x_px) \(y_px) \(w_px) \(h_px)")
+            let rect = Rect(x: x_sc, y: y_sc, w: w_sc, h: h_sc)
+            print(rectToString(rect, json: config.outputJSON))
+        case .pixel:
+            let x_pt = rectInView.origin.x
+            let y_pt = rectInView.origin.y
+            let w_pt = rectInView.size.width
+            let h_pt = rectInView.size.height
+
+            let x_px = x_pt * scale
+            let w_px = w_pt * scale
+            let h_px = h_pt * scale
+            let y_px = (screenFrame.height - y_pt - h_pt) * scale
+
+            let rect = Rect(x: x_px, y: y_px, w: w_px, h: h_px)
+            print(rectToString(rect, json: config.outputJSON))
         }
 
         fflush(stdout)

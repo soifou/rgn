@@ -40,12 +40,20 @@ rgn
 
 1. Click and drag to select a region
 2. (Optional) Drag inside the region to move, drag the corners to resize
-3. Double click: coordinates are printed to stdout: e.g. `64 1299 830 174`
+3. Double click: coordinates are printed to stdout
 
 > [!NOTE]
 > Use `--no-confirm` to prints coordinates on release instead.
 
-## CLI arguments
+The coordinates are in the form: `X Y WIDTH HEIGHT`. You can either print
+coordinates as pixels or points, controlled by `--mode`:
+
+- `--mode pixel` (default): Values in pixels (Retina-aware). Relative to the
+  selected screen’s bottom-left. Good for `ffmpeg`’s crop filter.
+- `--mode point`: Values in points. In global CoreGraphics space, origin at
+  top-left of the main display. Good for `screencapture -R`.
+
+## Options
 
 | Option              | Description                                              |
 | ------------------- | -------------------------------------------------------- |
@@ -58,6 +66,7 @@ rgn
 | `--no-crosshair`    | Hide crosshair cursor                                    |
 | `--no-confirm`      | Print to stdout on mouse release instead of double-click |
 | `--output <format>` | Change stdout to another format (json)                   |
+| `--mode <format>`   | Output mode: pixel (default), point                      |
 | `-V`, `--version`   | Display version information and exit                     |
 | `-h`, `--help`      | Show help                                                |
 
@@ -66,9 +75,8 @@ rgn
 ### Screen recording with ffmpeg
 
 ```sh
-coords=$(rgn)
+coords=$(rgn --mode pixel)
 set -- $coords
-
 X=$1 Y=$2 W=$3 H=$4
 
 ffmpeg \
@@ -78,6 +86,16 @@ ffmpeg \
     -vf "crop=${W}:${H}:${X}:${Y}" \
     -pix_fmt yuv420p \
     out.mp4
+```
+
+### Screenshot with screencapture
+
+```sh
+coords=$(rgn --mode point)
+set -- $coords
+X=$1 Y=$2 W=$3 H=$4
+
+screencapture -x -R"$X,$Y,$W,$H"
 ```
 
 ## Motivation

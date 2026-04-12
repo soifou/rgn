@@ -17,12 +17,13 @@ OPTIONS:
   --no-crosshair        Hide crosshair cursor
   --no-confirm          Print to stdout on mouse release instead of double-click
   --output <format>     Change stdout to another format
+  --mode <name>         Output mode: pixel (default), point
 
   -V, --version         Display version information and exit
   -h, --help            Show this help
 
 OUTPUT:
-  Prints: X Y WIDTH HEIGHT (in pixels, ffmpeg-ready)
+  Prints: X Y WIDTH HEIGHT (in pixels or points, see --mode)
 
 EXAMPLES:
   rgn
@@ -66,4 +67,17 @@ func detectHandle(at point: NSPoint, in rect: NSRect, handleSize: CGFloat) -> Re
     if near(point, br) { return .bottomRight }
 
     return .none
+}
+
+func rectToString(_ rect: Rect, json: Bool = false) -> String {
+    let x = Int(rect.x.rounded())
+    let y = Int(rect.y.rounded())
+    let w = Int(rect.w.rounded())
+    let h = Int(rect.h.rounded())
+
+    if json {
+        return "{\"x\":\(x),\"y\":\(y),\"width\":\(w),\"height\":\(h)}"
+    } else {
+        return "\(x) \(y) \(w) \(h)"
+    }
 }
