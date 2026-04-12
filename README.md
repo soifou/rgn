@@ -95,7 +95,7 @@ coords=$(rgn --mode point)
 set -- $coords
 X=$1 Y=$2 W=$3 H=$4
 
-screencapture -x -R"$X,$Y,$W,$H"
+screencapture -x -R"$X,$Y,$W,$H" out.png
 ```
 
 ## Motivation
