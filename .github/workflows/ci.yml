@@ -10,6 +10,8 @@ jobs:
         runs-on: macos-latest
         steps:
             - uses: actions/checkout@v4
+            - name: Generate version file
+              run: echo 'let appVersion = "v0.0.0-ci"' > Sources/rgn/build.swift
             - name: Check formatting
               run: |
                 mkdir -p /tmp/rgn
