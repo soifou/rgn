@@ -7,6 +7,7 @@ class SelectionView: NSView {
     var isDraggingSelection = false
     var dragOffset: NSPoint = .zero
     var activeHandle: ResizeHandle = .none
+    var mousePosition: NSPoint?
     let handleSize: CGFloat = 8.0
 
     func currentRect() -> NSRect? {
@@ -75,10 +76,27 @@ class SelectionView: NSView {
     }
 
     override func draw(_ dirtyRect: NSRect) {
-
         if config.dimBackground {
             NSColor.black.withAlphaComponent(0.3).setFill()
             dirtyRect.fill()
+        }
+
+        // If no active selection, draw full-screen crosshair at mousePosition.
+        if let pos = mousePosition, startPoint == nil, currentPoint == nil, config.showCrosshair {
+            let crosshairColor = config.borderColor
+            crosshairColor.setStroke()
+
+            let horiz = NSBezierPath()
+            horiz.move(to: NSPoint(x: bounds.minX, y: pos.y))
+            horiz.line(to: NSPoint(x: bounds.maxX, y: pos.y))
+            horiz.lineWidth = config.lineWidth
+            horiz.stroke()
+
+            let vert = NSBezierPath()
+            vert.move(to: NSPoint(x: pos.x, y: bounds.minY))
+            vert.line(to: NSPoint(x: pos.x, y: bounds.maxY))
+            vert.lineWidth = config.lineWidth
+            vert.stroke()
         }
 
         guard let start = startPoint,
@@ -282,14 +300,20 @@ class SelectionView: NSView {
     }
 
     override func mouseMoved(with event: NSEvent) {
-        guard let rect = currentRect() else { return }
-
         let point = convert(event.locationInWindow, from: nil)
+        mousePosition = point
+
+        guard let rect = currentRect() else {
+            // When not selecting, just update crosshair
+            needsDisplay = true
+            return
+        }
+
         let handle = detectHandle(at: point, in: rect, handleSize: handleSize)
 
         switch handle {
         case .topLeft, .bottomRight:
-            NSCursor.crosshair.set()  // or diagonal resize
+            NSCursor.crosshair.set()
         case .topRight, .bottomLeft:
             NSCursor.crosshair.set()
         case .none:

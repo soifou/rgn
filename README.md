@@ -63,7 +63,7 @@ coordinates as pixels or points, controlled by `--mode`:
 | `--fill`            | Fill selection area with transparent color                |
 | `--alpha <float>`   | Set transparency level for the overlay                    |
 | `--no-dim`          | Disable dark background overlay                           |
-| `--no-crosshair`    | Hide crosshair cursor                                     |
+| `--no-crosshair`    | Hide crosshair                                            |
 | `--no-confirm`      | Print to stdout on mouse release instead of double-click  |
 | `--format <format>` | Output format: text (default), json                       |
 | `--mode <mode>`     | Coordinate mode: pixel (default), point                   |
