@@ -11,7 +11,8 @@ class SelectionView: NSView {
 
     func currentRect() -> NSRect? {
         guard let start = startPoint,
-              let current = currentPoint else { return nil }
+            let current = currentPoint
+        else { return nil }
 
         return NSRect(
             x: min(start.x, current.x),
@@ -23,7 +24,8 @@ class SelectionView: NSView {
 
     func emitResult(start: NSPoint, end: NSPoint) {
         guard let window = self.window,
-              let screen = window.screen else { return }
+            let screen = window.screen
+        else { return }
 
         let rectInView = NSRect(
             x: min(start.x, end.x),
@@ -36,6 +38,8 @@ class SelectionView: NSView {
         let rectInWindow = self.convert(rectInView, to: nil)
         let rectInScreenPoints = window.convertToScreen(rectInWindow)
         let screenFrame = screen.frame
+
+        // debugLogToFile("rectInScreenPoints: \(rectInScreenPoints) mode=\(config.mode)")
 
         switch config.mode {
         case .point:
@@ -78,7 +82,8 @@ class SelectionView: NSView {
         }
 
         guard let start = startPoint,
-              let current = currentPoint else { return }
+            let current = currentPoint
+        else { return }
 
         let rect = NSRect(
             x: min(start.x, current.x),
@@ -92,11 +97,11 @@ class SelectionView: NSView {
             NSPoint(x: rect.minX, y: rect.minY),
             NSPoint(x: rect.minX, y: rect.maxY),
             NSPoint(x: rect.maxX, y: rect.minY),
-            NSPoint(x: rect.maxX, y: rect.maxY)
+            NSPoint(x: rect.maxX, y: rect.maxY),
         ] {
             let handleRect = NSRect(
-                x: corner.x - handleRectSize/2,
-                y: corner.y - handleRectSize/2,
+                x: corner.x - handleRectSize / 2,
+                y: corner.y - handleRectSize / 2,
                 width: handleRectSize,
                 height: handleRectSize
             )
@@ -129,8 +134,9 @@ class SelectionView: NSView {
         // double click to confirm
         if event.clickCount == 2 {
             if let start = startPoint,
-               let end = currentPoint {
-                   emitResult(start: start, end: end)
+                let end = currentPoint
+            {
+                emitResult(start: start, end: end)
             }
             return
         }
@@ -222,7 +228,8 @@ class SelectionView: NSView {
         isDraggingSelection = false
 
         guard let start = startPoint,
-              let end = currentPoint else { return }
+            let end = currentPoint
+        else { return }
 
         if !config.confirm {
             emitResult(start: start, end: end)
@@ -260,7 +267,7 @@ class SelectionView: NSView {
 
         switch handle {
         case .topLeft, .bottomRight:
-            NSCursor.crosshair.set() // or diagonal resize
+            NSCursor.crosshair.set()  // or diagonal resize
         case .topRight, .bottomLeft:
             NSCursor.crosshair.set()
         case .none:

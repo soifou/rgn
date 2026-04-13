@@ -9,7 +9,7 @@ class CaptureWindow: NSWindow {
     override func keyDown(with event: NSEvent) {
         let isCtrl = event.modifierFlags.contains(.control)
 
-        if event.keyCode == 53 { // ESC
+        if event.keyCode == 53 {  // ESC
             cancel()
             return
         }

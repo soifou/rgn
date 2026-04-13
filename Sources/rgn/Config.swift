@@ -10,7 +10,6 @@ enum OutputFormat {
     case json
 }
 
-
 struct Config {
     var confirm: Bool = true
     var borderColor: NSColor = .systemBlue

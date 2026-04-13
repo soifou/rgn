@@ -1,35 +1,36 @@
 import Cocoa
 
 func printHelp() {
-    print("""
-rgn — ReGioN capture tool for macOS
+    print(
+        """
+        rgn — ReGioN capture tool for macOS
 
-USAGE:
-  rgn [options]
+        USAGE:
+          rgn [options]
 
-OPTIONS:
-  --color <hex>         Set border color in hex format
-  --thickness <px>      Set border thickness in pixels
-  --border-dash         Use dashed style for the border
-  --fill                Fill selection area with transparent color
-  --alpha <float>       Set transparency level for the overlay
-  --no-dim              Disable dark background overlay
-  --no-crosshair        Hide crosshair cursor
-  --no-confirm          Print to stdout on mouse release instead of double-click
-  --format <format>     Output format: text (default), json
-  --mode <name>         Coordinate mode: pixel (default), point
+        OPTIONS:
+          --color <hex>         Set border color in hex format
+          --thickness <px>      Set border thickness in pixels
+          --border-dash         Use dashed style for the border
+          --fill                Fill selection area with transparent color
+          --alpha <float>       Set transparency level for the overlay
+          --no-dim              Disable dark background overlay
+          --no-crosshair        Hide crosshair cursor
+          --no-confirm          Print to stdout on mouse release instead of double-click
+          --format <format>     Output format: text (default), json
+          --mode <name>         Coordinate mode: pixel (default), point
 
-  -V, --version         Display version information and exit
-  -h, --help            Show this help
+          -V, --version         Display version information and exit
+          -h, --help            Show this help
 
-OUTPUT:
-  Prints: X Y WIDTH HEIGHT (in pixels or points, see --mode)
+        OUTPUT:
+          Prints: X Y WIDTH HEIGHT (in pixels or points, see --mode)
 
-EXAMPLES:
-  rgn
-  rgn --color "#ff0000" --thickness 4
-  rgn --fill --no-dim
-""")
+        EXAMPLES:
+          rgn
+          rgn --color "#ff0000" --thickness 4
+          rgn --fill --no-dim
+        """)
 }
 
 func colorFromHex(_ hex: String) -> NSColor {
@@ -40,8 +41,9 @@ func colorFromHex(_ hex: String) -> NSColor {
     }
 
     guard hex.count == 6,
-          let value = Int(hex, radix: 16) else {
-        return NSColor.systemBlue // fallback
+        let value = Int(hex, radix: 16)
+    else {
+        return NSColor.systemBlue  // fallback
     }
 
     let r = CGFloat((value >> 16) & 0xFF) / 255.0
