@@ -75,6 +75,30 @@ class SelectionView: NSView {
         NSApp.terminate(nil)
     }
 
+    func updateCursor(at point: NSPoint) {
+        if isDraggingSelection {
+            NSCursor.openHand.set()
+            return
+        }
+
+        // If resizing via a handle
+        if let rect = currentRect() {
+            let handle = detectHandle(at: point, in: rect, handleSize: handleSize)
+            switch handle {
+            case .topLeft, .bottomRight:
+                NSCursor.closedHand.set()
+                return
+            case .topRight, .bottomLeft:
+                NSCursor.closedHand.set()
+                return
+            case .none:
+                break
+            }
+        }
+
+        NSCursor.crosshair.set()
+    }
+
     override func draw(_ dirtyRect: NSRect) {
         if config.dimBackground {
             NSColor.black.withAlphaComponent(0.3).setFill()
@@ -83,8 +107,8 @@ class SelectionView: NSView {
 
         // If no active selection, draw full-screen crosshair at mousePosition.
         if let pos = mousePosition, startPoint == nil, currentPoint == nil, config.showCrosshair {
-            let crosshairColor = config.borderColor
-            crosshairColor.setStroke()
+            let color = config.borderColor
+            color.setStroke()
 
             let horiz = NSBezierPath()
             horiz.move(to: NSPoint(x: bounds.minX, y: pos.y))
@@ -187,6 +211,7 @@ class SelectionView: NSView {
             let handle = detectHandle(at: point, in: rect, handleSize: handleSize)
             if handle != .none {
                 activeHandle = handle
+                updateCursor(at: point)
                 return
             }
 
@@ -197,6 +222,7 @@ class SelectionView: NSView {
                     x: point.x - rect.origin.x,
                     y: point.y - rect.origin.y
                 )
+                updateCursor(at: point)
                 return
             }
         }
@@ -205,6 +231,7 @@ class SelectionView: NSView {
         isDraggingSelection = false
         startPoint = point
         currentPoint = point
+        updateCursor(at: point)
     }
 
     override func mouseDragged(with event: NSEvent) {
@@ -261,11 +288,15 @@ class SelectionView: NSView {
         }
 
         needsDisplay = true
+        updateCursor(at: point)
     }
 
     override func mouseUp(with event: NSEvent) {
         activeHandle = .none
         isDraggingSelection = false
+
+        let point = convert(event.locationInWindow, from: nil)
+        updateCursor(at: point)
 
         guard let start = startPoint,
             let end = currentPoint
@@ -276,7 +307,6 @@ class SelectionView: NSView {
         }
     }
 
-    // crosshair
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
 
@@ -294,32 +324,14 @@ class SelectionView: NSView {
     }
 
     override func cursorUpdate(with event: NSEvent) {
-        if config.showCrosshair {
-            NSCursor.crosshair.set()
-        }
+        let point = convert(event.locationInWindow, from: nil)
+        updateCursor(at: point)
     }
 
     override func mouseMoved(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
         mousePosition = point
-
-        guard let rect = currentRect() else {
-            // When not selecting, just update crosshair
-            needsDisplay = true
-            return
-        }
-
-        let handle = detectHandle(at: point, in: rect, handleSize: handleSize)
-
-        switch handle {
-        case .topLeft, .bottomRight:
-            NSCursor.crosshair.set()
-        case .topRight, .bottomLeft:
-            NSCursor.crosshair.set()
-        case .none:
-            if config.showCrosshair {
-                NSCursor.crosshair.set()
-            }
-        }
+        needsDisplay = true
+        updateCursor(at: point)
     }
 }
