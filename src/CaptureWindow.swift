@@ -27,6 +27,6 @@ class CaptureWindow: NSWindow {
     private func cancel() {
         NSSound.beep()
         onCancel?()
-        NSApp.terminate(nil)
+        exit(1)
     }
 }
