@@ -1,0 +1,24 @@
+---
+name: CI
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+jobs:
+    format-and-test:
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Check formatting
+              run: |
+                mkdir -p /tmp/rgn
+                rsync -a --exclude='.build' ./ /tmp/rgn/
+                cd /tmp/rgn
+                swift format --recursive Sources Tests Package.swift
+                if ! diff -ru --exclude='.build' "$GITHUB_WORKSPACE" .; then
+                  echo "::error::Formatting failed. Please run 'swift format' locally."
+                  exit 1
+                fi
+            - name: Run tests
+              run: swift test
