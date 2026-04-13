@@ -10,6 +10,7 @@ func printHelp() {
 
         OPTIONS:
           --color <hex>         Set border color in hex format
+          --style <style>       Set border style: solid (default), dashed, dotted, double
           --thickness <px>      Set border thickness in pixels
           --border-dash         Use dashed style for the border
           --fill                Fill selection area with transparent color

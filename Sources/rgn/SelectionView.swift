@@ -120,8 +120,30 @@ class SelectionView: NSView {
         let path = NSBezierPath(rect: rect)
         path.lineWidth = config.lineWidth
 
-        if config.dashedBorder {
+        switch config.borderStyle {
+        case .solid:
+            break
+
+        case .dashed:
             path.setLineDash([6, 4], count: 2, phase: 0)
+
+        case .dotted:
+            path.setLineDash([1, 4], count: 2, phase: 0)
+
+        case .double:
+            let outer = NSBezierPath(rect: rect)
+            outer.lineWidth = config.lineWidth
+            config.borderColor.setStroke()
+            outer.stroke()
+
+            let insetAmount = config.lineWidth * 2
+            let innerRect = rect.insetBy(dx: insetAmount, dy: insetAmount)
+            if innerRect.width > 0, innerRect.height > 0 {
+                let inner = NSBezierPath(rect: innerRect)
+                inner.lineWidth = config.lineWidth
+                config.borderColor.setStroke()
+                inner.stroke()
+            }
         }
 
         config.borderColor.setStroke()

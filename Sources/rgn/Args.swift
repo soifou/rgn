@@ -13,6 +13,21 @@ func parseConfig(from arguments: [String]) -> Config {
                 i += 1
             }
 
+        case "--style":
+            if i + 1 < arguments.count {
+                switch arguments[i + 1] {
+                case "solid": config.borderStyle = .solid
+                case "dashed": config.borderStyle = .dashed
+                case "dotted": config.borderStyle = .dotted
+                case "double": config.borderStyle = .double
+                default:
+                    fputs("Unknown style: \(arguments[i + 1])\n", stderr)
+                    fputs("Supported styles: solid, dashed, dotted, double\n", stderr)
+                    exit(1)
+                }
+                i += 1
+            }
+
         case "--thickness":
             if i + 1 < arguments.count,
                 let t = Double(arguments[i + 1])
@@ -34,9 +49,6 @@ func parseConfig(from arguments: [String]) -> Config {
 
         case "--no-dim":
             config.dimBackground = false
-
-        case "--border-dash":
-            config.dashedBorder = true
 
         case "--no-crosshair":
             config.showCrosshair = false

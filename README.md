@@ -55,20 +55,20 @@ coordinates as pixels or points, controlled by `--mode`:
 
 ## Options
 
-| Option              | Description                                              |
-| ------------------- | -------------------------------------------------------- |
-| `--color <hex>`     | Set border color in hex format                           |
-| `--thickness <px>`  | Set border thickness in pixels                           |
-| `--border-dash`     | Use dashed style for the border                          |
-| `--fill`            | Fill selection area with transparent color               |
-| `--alpha <float>`   | Set transparency level for the overlay                   |
-| `--no-dim`          | Disable dark background overlay                          |
-| `--no-crosshair`    | Hide crosshair cursor                                    |
-| `--no-confirm`      | Print to stdout on mouse release instead of double-click |
-| `--format <format>` | Output format: text (default), json                      |
-| `--mode <mode>`     | Coordinate mode: pixel (default), point                  |
-| `-V`, `--version`   | Display version information and exit                     |
-| `-h`, `--help`      | Show help                                                |
+| Option              | Description                                               |
+| ------------------- | --------------------------------------------------------- |
+| `--color <hex>`     | Set border color in hex format                            |
+| `--style <style>`   | Set border style: solid (default), dashed, dotted, double |
+| `--thickness <px>`  | Set border thickness in pixels                            |
+| `--fill`            | Fill selection area with transparent color                |
+| `--alpha <float>`   | Set transparency level for the overlay                    |
+| `--no-dim`          | Disable dark background overlay                           |
+| `--no-crosshair`    | Hide crosshair cursor                                     |
+| `--no-confirm`      | Print to stdout on mouse release instead of double-click  |
+| `--format <format>` | Output format: text (default), json                       |
+| `--mode <mode>`     | Coordinate mode: pixel (default), point                   |
+| `-V`, `--version`   | Display version information and exit                      |
+| `-h`, `--help`      | Show help                                                 |
 
 ## Examples
 
