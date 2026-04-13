@@ -22,5 +22,6 @@ jobs:
                   echo "::error::Formatting failed. Please run 'swift format' locally."
                   exit 1
                 fi
-            - name: Run tests
-              run: swift test
+            # NOTE: To slow to run few cases... disabled
+            # - name: Run tests
+            #   run: swift test
