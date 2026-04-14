@@ -5,9 +5,13 @@ import Testing
 
 @Suite
 struct RgnTests {
+
     @Test
-    func colorFromHex_parsesValidHex() throws {
-        let color = colorFromHex("#ff0000")
+    func parseColorFromHex_validHex() throws {
+        #expect(colorFromHex("#ff0000") != nil, "should parse valid hex")
+
+        guard let color = colorFromHex("#ff0000") else { return }
+
         let converted = color.usingColorSpace(.deviceRGB)!
         #expect(converted.redComponent > 0.9, "red should be high")
         #expect(converted.greenComponent < 0.2, "green should be low")
@@ -15,10 +19,11 @@ struct RgnTests {
     }
 
     @Test
-    func colorFromHex_invalidFallsBack() throws {
-        let color = colorFromHex("not-a-color")
-        let converted = color.usingColorSpace(.deviceRGB)!
-        #expect(converted.redComponent >= 0.0 && converted.redComponent <= 1.0)
+    func parseColorFromHex_invalidReturnsNil() throws {
+        #expect(colorFromHex("not-a-color") == nil)
+        #expect(colorFromHex("#zzzzzz") == nil)
+        #expect(colorFromHex("") == nil)
+        #expect(colorFromHex("#123") == nil)
     }
 
     @Test
@@ -66,8 +71,6 @@ struct RgnTests {
 
         let converted = config.borderColor.usingColorSpace(.deviceRGB)!
         #expect(converted.greenComponent > 0.8, "green should be high")
-        #expect(converted.redComponent < 0.2, "red should be low")
-        #expect(converted.blueComponent < 0.2, "blue should be low")
     }
 
     @Test

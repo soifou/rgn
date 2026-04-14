@@ -8,10 +8,14 @@ func parseConfig(from arguments: [String]) -> Config {
         switch arguments[i] {
 
         case "--color":
-            if i + 1 < arguments.count {
-                config.borderColor = colorFromHex(arguments[i + 1])
-                i += 1
+            guard i + 1 < arguments.count,
+                let color = colorFromHex(arguments[i + 1])
+            else {
+                fputs("Invalid color format. Use RRGGBB or \"#RRGGBB\".\n", stderr)
+                exit(1)
             }
+            config.borderColor = color
+            i += 1
 
         case "--style":
             if i + 1 < arguments.count {
@@ -29,23 +33,27 @@ func parseConfig(from arguments: [String]) -> Config {
             }
 
         case "--thickness":
-            if i + 1 < arguments.count,
-                let t = Double(arguments[i + 1])
-            {
-                config.lineWidth = CGFloat(t)
-                i += 1
+            guard i + 1 < arguments.count,
+                let thickness = Double(arguments[i + 1])
+            else {
+                fputs("--thickness requires a number\n", stderr)
+                exit(1)
             }
+            config.lineWidth = CGFloat(thickness)
+            i += 1
+
+        case "--alpha":
+            guard i + 1 < arguments.count,
+                let alpha = Double(arguments[i + 1])
+            else {
+                fputs("--alpha requires a number\n", stderr)
+                exit(1)
+            }
+            config.fillAlpha = CGFloat(max(0, min(1, alpha)))
+            i += 1
 
         case "--fill":
             config.fillEnabled = true
-
-        case "--alpha":
-            if i + 1 < arguments.count,
-                let a = Double(arguments[i + 1])
-            {
-                config.fillAlpha = CGFloat(max(0, min(1, a)))
-                i += 1
-            }
 
         case "--no-dim":
             config.dimBackground = false
@@ -58,26 +66,30 @@ func parseConfig(from arguments: [String]) -> Config {
 
         case "--format":
             if i + 1 < arguments.count {
-                let value = arguments[i + 1]
-                switch value {
+                let format = arguments[i + 1]
+                switch format {
                 case "json":
                     config.format = .json
-                default:
+                case "text":
                     config.format = .text
+                default:
+                    fputs("Unknown format: \(format)\n", stderr)
+                    fputs("Supported format: text, json\n", stderr)
+                    exit(1)
                 }
                 i += 1
             }
 
         case "--mode":
             if i + 1 < arguments.count {
-                let value = arguments[i + 1]
-                switch value {
+                let mode = arguments[i + 1]
+                switch mode {
                 case "pixel":
                     config.mode = .pixel
                 case "point":
                     config.mode = .point
                 default:
-                    fputs("Unknown mode: \(value)\n", stderr)
+                    fputs("Unknown mode: \(mode)\n", stderr)
                     fputs("Supported modes: pixel, point\n", stderr)
                     exit(1)
                 }

@@ -34,17 +34,17 @@ func printHelp() {
         """)
 }
 
-func colorFromHex(_ hex: String) -> NSColor {
+func colorFromHex(_ hex: String) -> NSColor? {
     var hex = hex.trimmingCharacters(in: .whitespacesAndNewlines)
 
     if hex.hasPrefix("#") {
-        hex.removeFirst()
+        hex = String(hex.dropFirst())
     }
 
     guard hex.count == 6,
         let value = Int(hex, radix: 16)
     else {
-        return NSColor.systemBlue  // fallback
+        return nil
     }
 
     let r = CGFloat((value >> 16) & 0xFF) / 255.0
