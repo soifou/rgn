@@ -134,7 +134,7 @@ class SelectionView: NSView {
             height: abs(start.y - current.y)
         )
 
-        let handleRectSize: CGFloat = 6
+        let handleRectSize: CGFloat = config.lineWidth + 4
         for corner in [
             NSPoint(x: rect.minX, y: rect.minY),
             NSPoint(x: rect.minX, y: rect.maxY),
