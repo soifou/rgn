@@ -1,8 +1,14 @@
 # rgn
 
+<p align="center">
+  <img alt="logo" src="./assets/logo.png" />
+</p>
+
 Minimal screen region selector for macOS, designed for shell scripting
 workflows. It lets you interactively select a region and outputs coordinates
 directly usable in tools like ffmpeg.
+
+<https://github.com/user-attachments/assets/2562dea2-3530-4aa5-97b7-4798d041be22>
 
 ## Features
 
